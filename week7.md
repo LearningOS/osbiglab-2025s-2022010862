@@ -4,4 +4,7 @@
 2. 期间做了一个与 OS 无关的组件 [WeakMap](https://github.com/Starry-OS/weak-map)
 3. 解决了一个特定架构上 tls 相关的问题
 
-下周目标：完成整合，跑测例
+下周目标：
+- 完成进程
+- epoll
+- 跑测例
