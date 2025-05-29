@@ -177,7 +177,7 @@ let threads = BTreeMap::new();
 threads.len(); // 1
 ```
 
-### [#[extern_trait]](AsakuraMizu/extern-trait)
+### [#[extern_trait]](https://github.com/AsakuraMizu/extern-trait)
 
 #### 设计
 
@@ -228,7 +228,6 @@ unsafe impl Hello for HelloProxy {
     }
     // ...
 }
-
 
 const _: () = {
     #[doc(hidden)]
@@ -307,7 +306,22 @@ pub struct Process {
 
 ## 3. 开发过程
 
-TODO
+由于我在开发过程中基本上都以合并进入 oscomp 分支仓库为目标，开发过程时间线基本上可以参考 PR 顺序，这里是链接：
+- https://github.com/oscomp/arceos/issues?q=sort%3Aupdated-desc+author%3AAsakuraMizu
+- https://github.com/oscomp/starry-next/issues?q=sort%3Aupdated-desc+author%3AAsakuraMizu
+
+所以这里只说一些比较“印象深刻”的事情。
+
+1. 我在很早的时候（3月中旬）就意识到并提出来 `arceos_posix_api` 并不适合我们直接使用，它的设计是为了和 `axlibc` 对接，结果就是指针满天飞，很多问题也没有考虑到。  
+   很快就做了第一版重构的 draft pr，但是当时还有很多更急于解决的问题，而且重构的也不是很理想，最后在三月底只合并了把 Starry 拆分成三个 crate 的 PR  
+   后来我们专注于在自己的分支上推进工作，这个 pr 就被遗忘了，直到后来合并进程功能的时候被意外关掉了。  
+   最终在五月中旬的时候，我再次整理代码并重新提起了这个 PR，这件事才算告一段落。
+2. 很早就有同学遇到了 TLS 寄存器相关的问题，但是最初只是以“能用就行”为目标实现了一个非常奇怪的 fix，并且还需要特判平台。  
+   我最初也不知道原因，也解释不了为什么只有部分平台上需要这个修复。  
+   但是后来我通过进一步调查知道了这里的差异是由不同平台里 thread local 相关寄存器的地位不同，进而发现其实 ArceOS 里在这一块儿实现的问题很大。具体的技术细节可以看上面列过的 PR。  
+   但是总之为了调查和修复这个问题花了不少功夫。
+3. 做这个 `#[extern_trait]` 其实是我第一次写过程宏，花了不少功夫学习这个东西。最后写出来的代码感觉还有很多不满意的地方。  
+   并且这个东西涉及到不同平台的 abi 问题，我本来了解的也不多，一开始只考虑了几个简单的 64 位架构（rv64，la64，aarch64，还没考虑x86-64，毕竟它不简单），但是写了单元测试之后，通过 cross 跑了一下，意外地发现大部分平台都能通过测试。
 
 ## 4. 分析&比较 oskernel2024-minotauros
 
